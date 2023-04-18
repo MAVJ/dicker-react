@@ -1,0 +1,19 @@
+# This is a GitLab CI configuration to build the project as a docker image
+stages:
+  - build
+  - test
+
+docker-build:
+  # Use the official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
+    - docker build -t mav/docker-react -f Dockerfile.dev .
+
+Test-Code:
+  stage: test
+  script:
+    - docker run -e CI=true mav/docker-react npm run test
